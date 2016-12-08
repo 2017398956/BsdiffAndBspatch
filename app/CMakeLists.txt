@@ -30,7 +30,19 @@ add_library( # Sets the name of the library.
              # Associated headers in the same location as their source
              # file are automatically included.
              src/main/cpp/nflbspatch-lib.cpp
-             src/main/cpp/bspatch.c)
+             src/main/cpp/bzip2/blocksort.c
+             src/main/cpp/bzip2/bzlib.c
+             src/main/cpp/bzip2/compress.c
+             src/main/cpp/bzip2/dlltest.c
+             src/main/cpp/bzip2/randtable.c
+             src/main/cpp/bzip2/bzip2.c
+             src/main/cpp/bzip2/crctable.c
+             src/main/cpp/bzip2/huffman.c
+             src/main/cpp/bzip2/spewG.c
+             src/main/cpp/bzip2/bzip2recover.c
+             src/main/cpp/bzip2/decompress.c
+             src/main/cpp/bzip2/unzcrash.c
+             )
 
 # Searches for a specified prebuilt library and stores the path as a
 # variable. Because system libraries are included in the search path by
