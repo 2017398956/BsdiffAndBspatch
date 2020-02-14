@@ -19,41 +19,33 @@ import nfl.bspatch.BspatchUtil;
 
 public class MainActivity extends AppCompatActivity {
 
-    private String path ;
-    private TextView tv ;
-    private Button button ;
-    private ProgressBar pb ;
-    private Thread patchThread ;
-    private Handler handler = new Handler(){
+    private String path;
+    private TextView tv;
+    private Button button;
+    private ProgressBar pb;
+    private Thread patchThread;
+    private Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
-            if(msg.what == 0){
+            if (msg.what == 0) {
                 tv.setText("Success");
-            }else {
+            } else {
                 tv.setText("Failed");
             }
             button.setVisibility(View.VISIBLE);
             pb.setVisibility(View.GONE);
         }
-    } ;
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+//        stringFromJNI("Hello C++" , "1.0") ;
+//        stringFromJNI("Hello C++" , "1.0") ;
         setContentView(R.layout.activity_main);
-        path = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "AndroidPatch" + File.separator;
-        patchThread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                int result = BspatchUtil.bspatch(ApkExtract.extract(MainActivity.this), path + "newDemo.apk", path + "patchFileDemo.apk") ;
-                handler.sendEmptyMessage(result) ;
-            }
-        }) ;
-        // Example of a call to a native method
-        tv = (TextView) findViewById(R.id.sample_text);
-        button = (Button) findViewById(R.id.button);
-        pb = (ProgressBar) findViewById(R.id.pb) ;
+        initViews();
+        initData();
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -62,26 +54,32 @@ public class MainActivity extends AppCompatActivity {
                 patchThread.start();
             }
         });
-        // tv.setText(BspatchUtil.say("中文测试") + BspatchUtil.add(660 , 6));
-        File newFile = new File(path + "new.apk");
-        String test = null;
-        if (newFile.exists()) {
-            test = "exist";
-        } else {
-            test = "!exist";
-        }
-        tv.setText(ApkExtract.extract(this) + " |" + test + "| " + BspatchUtil.testAdd2(1000, 900));
-        // 不知道为什么这个方法调用后会崩溃
-        // tv.setText(BspatchUtil.sayHello("中文测试") + BspatchUtil.add(100 , 900));
     }
 
-    /**
-     * A native method that is implemented by the 'native-lib' native library,
-     * which is packaged with this application.
-     */
-    public native String stringFromJNI();
+    private void initViews() {
+        tv = findViewById(R.id.sample_text);
+        button = findViewById(R.id.button);
+        pb = findViewById(R.id.pb);
+        tv.setText(ApkExtract.extract(this) + " |"
+                + (new File(path + "new.apk").exists() ? "exist" : "!exist")
+                + "| "
+                + BspatchUtil.sayHello(null));
+    }
 
-    // Used to load the 'native-lib' library on application startup.
+    private void initData() {
+        path = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "AndroidPatch" + File.separator;
+        patchThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                int result = BspatchUtil.bspatch(ApkExtract.extract(MainActivity.this), path + "newDemo.apk", path + "patchFileDemo.apk");
+                handler.sendEmptyMessage(result);
+            }
+        });
+    }
+
+//    public native String stringFromJNI(String str , String version);
+//    public native String stringFromJNI(String str);
+
     static {
         System.loadLibrary("native-lib");
     }

@@ -182,14 +182,14 @@ int patchMethodByNFL(int argc, char *argv[]) {
         ((old = static_cast<u_char *>(malloc(oldsize + 1))) == NULL) ||
         (lseek(fd, 0, SEEK_SET) != 0) ||
         (read(fd, old, oldsize) != oldsize) ||
-        (close(fd) == -1)){
+        (close(fd) == -1)) {
         // err(1, "%s", argv[1]);
-        return -16 ;
+        return -16;
     }
 
-    if ((newFile = static_cast<u_char *>(malloc(newsize + 1))) == NULL){
+    if ((newFile = static_cast<u_char *>(malloc(newsize + 1))) == NULL) {
         // err(1, NULL);
-        return -17 ;
+        return -17;
     }
 
     oldpos = 0;
@@ -199,26 +199,26 @@ int patchMethodByNFL(int argc, char *argv[]) {
         for (i = 0; i <= 2; i++) {
             lenread = BZ2_bzRead(&cbz2err, cpfbz2, buf, 8);
             if ((lenread < 8) || ((cbz2err != BZ_OK) &&
-                                  (cbz2err != BZ_STREAM_END))){
+                                  (cbz2err != BZ_STREAM_END))) {
                 // errx(1, "Corrupt patch\n");
-                return -18 ;
+                return -18;
             }
 
             ctrl[i] = offtin(buf);
         };
 
         /* Sanity-check */
-        if (newpos + ctrl[0] > newsize){
+        if (newpos + ctrl[0] > newsize) {
             // errx(1, "Corrupt patch\n");
-            return -19 ;
+            return -19;
         }
 
         /* Read diff string */
         lenread = BZ2_bzRead(&dbz2err, dpfbz2, newFile + newpos, ctrl[0]);
         if ((lenread < ctrl[0]) ||
-            ((dbz2err != BZ_OK) && (dbz2err != BZ_STREAM_END))){
+            ((dbz2err != BZ_OK) && (dbz2err != BZ_STREAM_END))) {
             // errx(1, "Corrupt patch\n");
-            return -20 ;
+            return -20;
         }
 
         /* Add old data to diff string */
@@ -231,17 +231,17 @@ int patchMethodByNFL(int argc, char *argv[]) {
         oldpos += ctrl[0];
 
         /* Sanity-check */
-        if (newpos + ctrl[1] > newsize){
+        if (newpos + ctrl[1] > newsize) {
             // errx(1, "Corrupt patch\n");
-            return -21 ;
+            return -21;
         }
 
         /* Read extra string */
         lenread = BZ2_bzRead(&ebz2err, epfbz2, newFile + newpos, ctrl[1]);
         if ((lenread < ctrl[1]) ||
-            ((ebz2err != BZ_OK) && (ebz2err != BZ_STREAM_END))){
+            ((ebz2err != BZ_OK) && (ebz2err != BZ_STREAM_END))) {
             // errx(1, "Corrupt patch\n");
-            return -22 ;
+            return -22;
         }
 
         /* Adjust pointers */
@@ -253,16 +253,16 @@ int patchMethodByNFL(int argc, char *argv[]) {
     BZ2_bzReadClose(&cbz2err, cpfbz2);
     BZ2_bzReadClose(&dbz2err, dpfbz2);
     BZ2_bzReadClose(&ebz2err, epfbz2);
-    if (fclose(cpf) || fclose(dpf) || fclose(epf)){
+    if (fclose(cpf) || fclose(dpf) || fclose(epf)) {
         // err(1, "fclose(%s)", argv[3]);
-        return -23 ;
+        return -23;
     }
 
     /* Write the new file */
     if (((fd = open(argv[2], O_CREAT | O_TRUNC | O_WRONLY, 0666)) < 0) ||
-        (write(fd, newFile, newsize) != newsize) || (close(fd) == -1)){
+        (write(fd, newFile, newsize) != newsize) || (close(fd) == -1)) {
         // err(1, "%s", argv[2]);
-        return -24 ;
+        return -24;
     }
 
     free(newFile);
@@ -285,12 +285,15 @@ jint bspatch(JNIEnv *env, jclass cls, jstring old, jstring now, jstring patch) {
     return ret;
 }
 
-// 不知道为什么这个方法调用后会崩溃
+extern "C"
 jstring Java_nfl_bspatch_BspatchUtil_sayHello(JNIEnv *env, jclass cls, jstring str) {
     if (NULL != str) {
         return str;
     }
-    return env->NewStringUTF("Hello from sayHello");
+    char *backStatement = "Hello from sayHello.";
+    jstring back = env->NewStringUTF(backStatement);
+    // env->ReleaseStringUTFChars(str, backStatement);
+    return back;
 }
 
 // 以下为动态注册JNI方法
@@ -337,7 +340,7 @@ typedef union {
     void *venv;
 } UnionJNIEnvToVoid;
 
-// 静态注册JNI方法
+// 动态注册JNI方法
 static int registerNativeMethods(JNIEnv *env, const char *className,
                                  JNINativeMethod *gMethods, int numMethods) {
     jclass clazz;
@@ -358,15 +361,17 @@ static int registerNatives(JNIEnv *env) {
 }
 
 // 当VM执行到System.loadLibrary()时，首先执行C组件里的JNI_OnLoad()。它的用途有二：
-// 1. 告诉VM此C组件使用那一个JNI版本。如果你的*.so文件没有提供JNI_OnLoad()，VM会默认该*.so檔是使用最老的JNI 1.1版本。由于新版的JNI做了许多扩充，如果需要使用JNI的新版功能，例如JNI 1.4的java.nio.ByteBuffer, 就必须藉由JNI_OnLoad()来告知VM。
-// 2. 由于VM执行到System.loadLibrary()时，就会立即先呼叫JNI_OnLoad()，所以C组件的开发者可以藉由JNI_OnLoad()来进行C组件内的初期值之设定(Initialization)。
-// 初始化并返回jni版本，无法获取jni环境时返回-1
+// 1. 告诉VM此C组件使用那一个JNI版本。如果你的*.so文件没有提供JNI_OnLoad()，VM会默认该*.so檔是使用最老的JNI 1.1版本。
+//    由于新版的JNI做了许多扩充，如果需要使用JNI的新版功能，例如JNI 1.4的java.nio.ByteBuffer,
+//    就必须藉由JNI_OnLoad()来告知VM。
+// 2. 由于VM执行到System.loadLibrary()时，就会立即先呼叫JNI_OnLoad()，所以C组件的开发者可以藉由JNI_OnLoad()
+//    来进行C组件内的初期值之设定(Initialization)。初始化并返回jni版本，无法获取jni环境时返回-1
 jint JNI_OnLoad(JavaVM *vm, void *reserved) {
+    jint result = -1;
     UnionJNIEnvToVoid uenv;
     uenv.venv = NULL;
-    jint result = -1;
     JNIEnv *env = NULL;
-    if (vm->GetEnv(&uenv.venv, JNI_VERSION_1_6) != JNI_OK) {
+    if (vm->GetEnv((void **) &uenv.venv, JNI_VERSION_1_6) != JNI_OK) {
         goto bail;// 无法获得jni环境，返回-1
     }
     env = uenv.env;

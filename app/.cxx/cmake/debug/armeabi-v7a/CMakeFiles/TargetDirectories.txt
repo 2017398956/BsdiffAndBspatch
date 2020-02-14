@@ -1,0 +1,4 @@
+D:/mysoftware/Android/projects/BsdiffAndBspatch/app/.cxx/cmake/debug/armeabi-v7a/CMakeFiles/native-lib.dir
+D:/mysoftware/Android/projects/BsdiffAndBspatch/app/.cxx/cmake/debug/armeabi-v7a/CMakeFiles/edit_cache.dir
+D:/mysoftware/Android/projects/BsdiffAndBspatch/app/.cxx/cmake/debug/armeabi-v7a/CMakeFiles/nflbspatch-lib.dir
+D:/mysoftware/Android/projects/BsdiffAndBspatch/app/.cxx/cmake/debug/armeabi-v7a/CMakeFiles/rebuild_cache.dir
