@@ -1,15 +1,15 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 28
-    buildToolsVersion "28.0.3"
+    compileSdkVersion 30
+    buildToolsVersion "30.0.3"
     defaultConfig {
         applicationId "com.nfl.bsdiffandbspatch"
         minSdkVersion 14
-        targetSdkVersion 28
+        targetSdkVersion 30
         versionCode 1
         versionName "1.0"
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
         externalNativeBuild {
             cmake {
                 cppFlags ""
@@ -31,9 +31,40 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    androidTestImplementation('com.android.support.test.espresso:espresso-core:3.0.2', {
+    androidTestImplementation('androidx.test.espresso:espresso-core:3.3.0', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    implementation 'com.android.support:appcompat-v7:28.0.0'
-    androidTestImplementation 'junit:junit:4.12'
+    implementation 'androidx.appcompat:appcompat:1.2.0'
+    androidTestImplementation 'junit:junit:4.13.2'
+}
+
+task personalTest(){
+    logger.log(LogLevel.ERROR , "task: personalTest exc")
+}
+
+project.tasks.all{task->
+//    logger.log(LogLevel.ERROR , "task:" + task.name)
+    if (task.name == "assembleDebug"){
+//        task.doFirst{
+//            logger.log(LogLevel.ERROR , "do before assembleDebug")
+//        }
+//        task.doLast{
+//            logger.log(LogLevel.ERROR , "do after assembleDebug")
+//        }
+    }
+}
+
+logger.log(LogLevel.ERROR , "buid.gradle")
+
+tasks.whenTaskAdded {task->
+    logger.log(LogLevel.ERROR , "task:" + task.name)
+    if (task.name == "assembleDebug"){
+        personalTest.dependsOn(task)
+//        task.doFirst{
+//            logger.log(LogLevel.ERROR , "do before assembleDebug")
+//        }
+//        task.doLast{
+//            logger.log(LogLevel.ERROR , "do after assembleDebug")
+//        }
+    }
 }
