@@ -9,7 +9,11 @@ public class BspatchUtil {
 
     protected static String TAG = "BspatchUtil" ;
     static {
+//        System.loadLibrary("nflbspatch-lib");
+        // 验证包冲突
+//        System.loadLibrary("test");
         System.loadLibrary("nflbspatch-lib");
+
     }
     // 注意：java代码中声明的native方法如果被调用cpp中必须有该方法，cpp代码中声明的native方法java中也必须有该方法。
     public static native int add(int x, int y);
