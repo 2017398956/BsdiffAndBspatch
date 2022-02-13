@@ -285,6 +285,7 @@ jint bspatch(JNIEnv *env, jclass cls, jstring old, jstring now, jstring patch) {
     return ret;
 }
 
+// 静态注册 java native method
 extern "C"
 jstring Java_nfl_bspatch_BspatchUtil_sayHello(JNIEnv *env, jclass cls, jstring str) {
     if (NULL != str) {
@@ -368,17 +369,18 @@ static int registerNatives(JNIEnv *env) {
 //    来进行C组件内的初期值之设定(Initialization)。初始化并返回jni版本，无法获取jni环境时返回-1
 jint JNI_OnLoad(JavaVM *vm, void *reserved) {
     jint result = -1;
+    jint defaultVersion = JNI_VERSION_1_6 ;
     UnionJNIEnvToVoid uenv;
     uenv.venv = NULL;
     JNIEnv *env = NULL;
-    if (vm->GetEnv((void **) &uenv.venv, JNI_VERSION_1_6) != JNI_OK) {
+    if (vm->GetEnv((void **) &uenv.venv,defaultVersion) != JNI_OK) {
         goto bail;// 无法获得jni环境，返回-1
     }
     env = uenv.env;
     if (registerNatives(env) != JNI_TRUE) {
         goto bail;
     }
-    result = JNI_VERSION_1_6;
+    result = defaultVersion;
     bail:
     return result;
 }

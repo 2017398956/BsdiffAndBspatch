@@ -62,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
         tv.setText(ApkExtract.extract(this) + " |"
                 + (new File(path + "new.apk").exists() ? "exist" : "!exist")
                 + "| "
-                + BspatchUtil.sayHello(null));
+                + BspatchUtil.sayHello("null"));
     }
 
     private void initData() {
