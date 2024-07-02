@@ -66,12 +66,23 @@ public class MainActivity extends AppCompatActivity {
                 Intent intent = new Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES, packageURI);
                 registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
                     if (result.getResultCode() == RESULT_OK) {
-                        //
+                        Toast.makeText(this, "已授权安装 APK", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(this, "未授权安装 APK", Toast.LENGTH_SHORT).show();
                     }
                 }).launch(intent);
             }
         }
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            //判断是否有管理外部存储的权限
+            if (!Environment.isExternalStorageManager()) {
+                // ACTION_APPLICATION_DETAILS_SETTINGS
+                Intent intent = new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
+                intent.setData(Uri.fromParts("package", getPackageName(), null));
+                startActivity(intent);
+            }
+        }
         initViews();
         initData();
         binding.button.setOnClickListener(view -> {
