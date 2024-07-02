@@ -24,8 +24,13 @@ android {
     }
     externalNativeBuild {
         cmake {
+            version = "3.22.1"
             path "CMakeLists.txt"
         }
+    }
+
+    buildFeatures {
+        viewBinding true
     }
 }
 
@@ -40,13 +45,13 @@ dependencies {
     androidTestImplementation 'junit:junit:4.13.2'
 }
 
-task personalTest(){
-    logger.log(LogLevel.ERROR , "task: personalTest exc")
+task personalTest() {
+    logger.log(LogLevel.ERROR, "task: personalTest exc")
 }
 
-project.tasks.all{task->
+project.tasks.all { task ->
 //    logger.log(LogLevel.ERROR , "task:" + task.name)
-    if (task.name == "assembleDebug"){
+    if (task.name == "assembleDebug") {
 //        task.doFirst{
 //            logger.log(LogLevel.ERROR , "do before assembleDebug")
 //        }
@@ -56,11 +61,11 @@ project.tasks.all{task->
     }
 }
 
-logger.log(LogLevel.ERROR , "buid.gradle")
+logger.log(LogLevel.ERROR, "buid.gradle")
 
-tasks.whenTaskAdded {task->
-    logger.log(LogLevel.ERROR , "task:" + task.name)
-    if (task.name == "assembleDebug"){
+tasks.whenTaskAdded { task ->
+    logger.log(LogLevel.ERROR, "task:" + task.name)
+    if (task.name == "assembleDebug") {
         personalTest.dependsOn(task)
 //        task.doFirst{
 //            logger.log(LogLevel.ERROR , "do before assembleDebug")
